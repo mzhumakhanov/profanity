@@ -1,7 +1,12 @@
 # JAC changes
-
 - [ ] Support Windows building on MinGW
 - [ ] Fix caching of compiled .cl files
+
+# Setup
+- Install MSYS2
+- Open MSYS2 x64 shell
+- ```pacman -S mingw-w64-x86_64-toolchain mingw-w64-x86_64-opencl-headers```
+- make -j12
 
 # profanity2
 

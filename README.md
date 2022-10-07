@@ -1,3 +1,8 @@
+# JAC changes
+
+- Support Windows building on MinGW
+- Fix caching of compiled .cl files
+
 # profanity2
 
 Profanity is a high performance (probably the fastest!) vanity address generator for Ethereum. Create cool customized addresses that you never realized you needed! Recieve Ether in style! Wow!

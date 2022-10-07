@@ -1,7 +1,7 @@
 # JAC changes
 
-- Support Windows building on MinGW
-- Fix caching of compiled .cl files
+- [ ] Support Windows building on MinGW
+- [ ] Fix caching of compiled .cl files
 
 # profanity2
 

@@ -2,7 +2,7 @@
 - [ ] Support Windows building on MinGW
 - [ ] Fix caching of compiled .cl files
 
-# Setup
+# Setup on Windows
 - Install MSYS2
 - Open MSYS2 x64 shell
 - ```pacman -S mingw-w64-x86_64-toolchain mingw-w64-x86_64-opencl-headers```

@@ -115,10 +115,11 @@ std::vector<std::string> getBinaries(cl_program & clProgram) {
 
 unsigned int getUniqueDeviceIdentifier(const cl_device_id & deviceId) {
 #if defined(CL_DEVICE_TOPOLOGY_AMD)
-	auto topology = clGetWrapper<cl_device_topology_amd>(clGetDeviceInfo, deviceId, CL_DEVICE_TOPOLOGY_AMD);
-	if (topology.raw.type == CL_DEVICE_TOPOLOGY_TYPE_PCIE_AMD) {
-		return (topology.pcie.bus << 16) + (topology.pcie.device << 8) + topology.pcie.function;
-	}
+	// TODO to check if commenting this out is OK. Seems to work fine even on AMD gpus
+	// auto topology = clGetWrapper<cl_device_topology_amd>(clGetDeviceInfo, deviceId, CL_DEVICE_TOPOLOGY_AMD);
+	// if (topology.raw.type == CL_DEVICE_TOPOLOGY_TYPE_PCIE_AMD) {
+	// 	return (topology.pcie.bus << 16) + (topology.pcie.device << 8) + topology.pcie.function;
+	// }
 #endif
 	cl_int bus_id = clGetWrapper<cl_int>(clGetDeviceInfo, deviceId, CL_DEVICE_PCI_BUS_ID_NV);
 	cl_int slot_id = clGetWrapper<cl_int>(clGetDeviceInfo, deviceId, CL_DEVICE_PCI_SLOT_ID_NV);
@@ -141,7 +142,10 @@ std::string getDeviceCacheFilename(cl_device_id & d, const size_t & inverseSize)
 }
 
 int main(int argc, char * * argv) {
-	THIS LINE WILL LEAD TO A COMPILE ERROR. THIS TOOL SHOULD NOT BE USED, SEE README.
+	// THIS LINE WILL LEAD TO A COMPILE ERROR. THIS TOOL SHOULD NOT BE USED, SEE README.
+
+	// ^^ Commented previous line and excluded private key generation out of scope of this project,
+	// now it only advances provided public key to a random offset to find vanity address
 
 	try {
 		ArgParser argp(argc, argv);
@@ -152,6 +156,7 @@ int main(int argc, char * * argv) {
 		bool bModeNumbers = false;
 		std::string strModeLeading;
 		std::string strModeMatching;
+		std::string strPublicKey;
 		bool bModeLeadingRange = false;
 		bool bModeRange = false;
 		bool bModeMirror = false;
@@ -186,6 +191,7 @@ int main(int argc, char * * argv) {
 		argp.addSwitch('i', "inverse-size", inverseSize);
 		argp.addSwitch('I', "inverse-multiple", inverseMultiple);
 		argp.addSwitch('c', "contract", bMineContract);
+		argp.addSwitch('z', "publicKey", strPublicKey);
 
 		if (!argp.parse()) {
 			std::cout << "error: bad arguments, try again :<" << std::endl;
@@ -222,6 +228,17 @@ int main(int argc, char * * argv) {
 			std::cout << g_strHelp << std::endl;
 			return 0;
 		}
+		
+		if (strPublicKey.length() == 0) {
+			std::cout << "error: this tool requires your public key to derive it's private key security" << std::endl;
+			return 1;
+		}
+
+		if (strPublicKey.length() != 128) {
+			std::cout << "error: public key must be 128 hexademical characters long" << std::endl;
+			return 1;
+		}
+
 		std::cout << "Mode: " << mode.name << std::endl;
 
 		if (bMineContract) {
@@ -343,7 +360,7 @@ int main(int argc, char * * argv) {
 
 		std::cout << std::endl;
 
-		Dispatcher d(clContext, clProgram, mode, worksizeMax == 0 ? inverseSize * inverseMultiple : worksizeMax, inverseSize, inverseMultiple, 0);
+		Dispatcher d(clContext, clProgram, mode, worksizeMax == 0 ? inverseSize * inverseMultiple : worksizeMax, inverseSize, inverseMultiple, 0, strPublicKey);
 		for (auto & i : vDevices) {
 			d.addDevice(i, worksizeLocal, mDeviceIndex[i]);
 		}
